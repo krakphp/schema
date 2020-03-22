@@ -31,7 +31,7 @@ function configureNode(NodeParentInterface $configNode, Node $node): void {
         }
 
         /** @var ArrayNodeDefinition $configNode */
-        foreach ($node->attribute('nodesByName', []) as $name => $childConfigNode) {
+        foreach ($node->attribute('nodesByName') ?? [] as $name => $childConfigNode) {
             configureNode($resNode->children(), $childConfigNode->withAddedAttributes(['name' => $name]));
         }
     } else if ($node->type() === "string" || $node->type() === "mixed") {
