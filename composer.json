@@ -1,0 +1,38 @@
+{
+    "name": "krak/schema",
+    "description": "Declarative API for Defining and Processing Schemas",
+    "type": "library",
+    "license": "MIT",
+    "keywords": [
+       "declarative",
+       "functional",
+       "config",
+       "validation",
+       "schema",
+       "symfony"
+    ],
+    "authors": [
+        {
+            "name": "RJ Garcia",
+            "email": "ragboyjr@icloud.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Krak\\Schema\\": "src"
+        },
+        "files": ["src/schema.php", "src/ProcessSchema/SymfonyConfig/process-schema.php"]
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.0",
+        "symfony/config": "^5.0",
+        "symfony/var-dumper": "^5.0",
+        "vimeo/psalm": "^3.9",
+        "symfony/yaml": "^5.0"
+    },
+    "scripts": {
+        "test-unit": "phpunit --testdox --colors=always test/unit",
+        "test-feature": "phpunit --testdox --colors=always test/feature",
+        "test": "phpunit --testdox --colors=always test/"
+    }
+}
