@@ -13,7 +13,9 @@ function configTree(string $rootName, Node $dictNode): TreeBuilder {
         throw new \RuntimeException('configTree expects a dict node for configuration. Received ' . $dictNode->type());
     }
     $treeBuilder = new TreeBuilder($rootName);
-    configureNode($treeBuilder->getRootNode(), $dictNode);
+    // support symfony 4 and 5.
+    $rootNode = method_exists($treeBuilder, 'root') ? $treeBuilder->root($rootName) : $treeBuilder->getRootNode();
+    configureNode($rootNode, $dictNode);
     return $treeBuilder;
 }
 

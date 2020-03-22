@@ -58,6 +58,8 @@ final class Configuration implements ConfigurationInterface
 }
 ```
 
+*Note:* This currently supports Symfony 4 and 5 config.
+
 #### Comparison of Declarative vs Builder Syntax
 
 Here's a seemingly simple config file that we'd want to validate the schema of:
