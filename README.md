@@ -42,6 +42,7 @@ Declare and build symfony config tree builders declaratively with the `configTre
 
 use Symfony\Component\Config\Definition\{ConfigurationInterface, TreeBuilder};
 use function Krak\Schema\ProcessSchema\SymfonyConfig\configTree;
+use function Krak\Schema\{dict, string};
 
 final class Configuration implements ConfigurationInterface
 {
@@ -59,6 +60,8 @@ final class Configuration implements ConfigurationInterface
 ```
 
 *Note:* This currently supports Symfony 4 and 5 config.
+
+[Check out the feature test suite to see examples of all the supported api.](test/feature/SymfonyConfigTest.php)
 
 #### Comparison of Declarative vs Builder Syntax
 
