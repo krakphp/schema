@@ -164,3 +164,5 @@ Run `composer test` to run the test suite.
 - Validation ProcessSchema
   - Create a function validation library for basic schemas
   - Support custom validators and schema fns
+- Symfony Validation ProcessSchema
+  - Export to symfony constraints to use with the SF validator. With one api, we could define schemas that export to SF config and SF validation!
