@@ -35,15 +35,4 @@ final class Node {
     public function withAddedAttributes(array $addedAttributes): self {
         return $this->withAttributes(array_merge($this->attributes, $addedAttributes));
     }
-
-    // public function configure(callable $configure): self {
-    //     return $this->withAddedAttributes(['configure' => $configure]);
-    // }
-
-    // public function maybeConfigure(...$args): void {
-    //     $configure = $this->attribute('configure');
-    //     if ($configure) {
-    //         $configure(...$args);
-    //     }
-    // }
 }
