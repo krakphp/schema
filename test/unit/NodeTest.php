@@ -17,20 +17,21 @@ final class NodeTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(['a' => 'b', 'b' => 'c'], $node->attributes());
     }
 
-    // public function test_configure() {
-    //     $wasCalled = null;
-    //     $node = (new Node('name'))->configure(function(...$args) use (&$wasCalled) {
-    //         $wasCalled = $args;
-    //     });
+    public function test_is_will_compare_on_strings() {
+        $node = new Node('type');
+        $this->assertEquals(true, $node->is('type'));
+        $this->assertEquals(false, $node->is('not-type'));
+    }
 
-    //     $node->maybeConfigure(1, 2, 3);
+    public function test_is_will_compare_on_array() {
+        $node = new Node('type');
+        $this->assertEquals(true, $node->is(['type', 'not-type']));
+        $this->assertEquals(false, $node->is(['not-type', 'not-type-2']));
+    }
 
-    //     $this->assertEquals([1,2,3], $wasCalled);
-    // }
-
-    // public function test_configure_does_nothing_if_nothing_was_configured() {
-    //     $node = new Node('name');
-    //     $node->maybeConfigure(1, 2, 3);
-    //     $this->assertTrue(true); // no errors occured :)
-    // }
+    public function test_is_will_fail_on_invalid_argument() {
+        $this->expectException(\InvalidArgumentException::class);
+        $node = new Node('type');
+        $node->is(1);
+    }
 }

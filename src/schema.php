@@ -24,9 +24,22 @@ function bool(array $attributes = []): Node {
 
 function listOf(Node $node): Node { return new Node('list', ['node' => $node]); }
 
-/** @param Node[] $nodes */
+/**
+ * Represents an unbound homgoneous key/value pair collection
+ * e.g. $usersByName = ['bob' => new User(), 'mary' => new User()]; // array<string, User>
+ * @param Node[] $nodes
+ */
 function dict(array $nodes, array $attributes = []): Node {
     return (new Node('dict', ['nodesByName' => $nodes]))->withAddedAttributes($attributes);
+}
+
+/**
+ * Represents an fixed heterogenous key/value pair collection
+ * e.g. $user = ['name' => 'Bob', 'age' => 15] // array{name: string, age: int}
+ * @param Node[] $nodes
+ */
+function struct(array $nodes, array $attributes = []): Node {
+    return (new Node('struct', ['nodesByName' => $nodes]))->withAddedAttributes($attributes);
 }
 
 /**

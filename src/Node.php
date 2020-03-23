@@ -18,6 +18,17 @@ final class Node {
         return $this->type;
     }
 
+    /** @param string|string[] $type */
+    public function is($type): bool {
+        if (is_string($type)) {
+            return $type === $this->type;
+        }
+        if (is_array($type)) {
+            return in_array($this->type, $type);
+        }
+        throw new \InvalidArgumentException('Expected an array or string for the type.');
+    }
+
     public function attributes(): array {
         return $this->attributes;
     }

@@ -9,8 +9,8 @@ use Symfony\Component\Config\Definition\Builder\NodeParentInterface;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 
 function configTree(string $rootName, Node $dictNode): TreeBuilder {
-    if ($dictNode->type() !== "dict") {
-        throw new \RuntimeException('configTree expects a dict node for configuration. Received ' . $dictNode->type());
+    if (!$dictNode->is(['dict', 'struct'])) {
+        throw new \RuntimeException('configTree expects a collection node for configuration. Received ' . $dictNode->type());
     }
     $treeBuilder = new TreeBuilder($rootName);
     // support symfony 4 and 5.
@@ -21,7 +21,7 @@ function configTree(string $rootName, Node $dictNode): TreeBuilder {
 
 /** @internal */
 function configureNode(NodeParentInterface $configNode, Node $node): void {
-    if ($node->type() === "dict") {
+    if ($node->is(['dict', 'struct'])) {
         if ($configNode instanceof ArrayNodeDefinition) {
             $resNode = $configNode;
         } else if ($configNode instanceof NodeBuilder) {
@@ -67,9 +67,9 @@ function configureNode(NodeParentInterface $configNode, Node $node): void {
 
 /** @internal */
 function configureArrayNode(ArrayNodeDefinition $arrayNode, Node $node): void {
-    if ($node->type() === "dict") {
+    if ($node->is(['dict', 'struct'])) {
         configureNode($arrayNode->arrayPrototype(), $node);
-    } else if ($node->type() === "string" || $node->type() === "mixed") {
+    } else if ($node->is(['string', 'mixed'])) {
         $arrayNode->scalarPrototype();
     } else if ($node->type() === "int") {
         $arrayNode->integerPrototype();

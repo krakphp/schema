@@ -14,14 +14,14 @@ Install with composer at `krak/schema`
 
 ```php
 <?php
-use function Krak\Schema\{dict, listOf, string, bool, int};
+use function Krak\Schema\{struct, listOf, string, bool, int};
 
-$schema = dict([
+$schema = struct([
     'name' => string(),
     'isAdmin' => bool(),
     'age' => int(),
     'tags' => listOf(string()),
-    'photos' => listOf(dict([
+    'photos' => listOf(struct([
         'url' => string(),
         'width' => int(),
         'height' => int(),
@@ -42,15 +42,15 @@ Declare and build symfony config tree builders declaratively with the `configTre
 
 use Symfony\Component\Config\Definition\{ConfigurationInterface, TreeBuilder};
 use function Krak\Schema\ProcessSchema\SymfonyConfig\configTree;
-use function Krak\Schema\{dict, string};
+use function Krak\Schema\{struct, string};
 
 final class Configuration implements ConfigurationInterface
 {
     public function getConfigTreeBuilder() {
-        return configTree('aws', dict([
+        return configTree('aws', struct([
             'version' => string(),
             'region' => string(),
-            'credentials' => dict([
+            'credentials' => struct([
                 'key' => string(),
                 'secret' => string(),
             ])
@@ -71,14 +71,14 @@ Here's a seemingly simple config file that we'd want to validate the schema of:
 my_package:
   string_key: 'abc'
   int_key: 1
-  dict_key:
+  struct_key:
     a: 1
     b: 2
   list_key: [1, 2, 3]
-  list_of_dict_key:
+  list_of_struct_key:
     - a: 1
       b: 2
-  dict_of_list:
+  struct_of_list:
     a: ['', '']
     b: [0, 0]
 ```
@@ -90,7 +90,7 @@ return (new TreeBuilder('my_package'))->getRootNode();
     ->children()
         ->scalarNode('string_key')->end()
         ->integerNode('int_key')->end()
-        ->arrayNode('dict_key')
+        ->arrayNode('struct_key')
             ->children()
                 ->scalarNode('a')->end()
                 ->integerNode('b')->end()
@@ -99,7 +99,7 @@ return (new TreeBuilder('my_package'))->getRootNode();
         ->arrayNode('list_key')
             ->integerPrototype()->end()
         ->end()
-        ->arrayNode('list_of_dict_key')
+        ->arrayNode('list_of_struct_key')
             ->arrayPrototype()
                 ->children()
                     ->integerNode('a')->end()
@@ -107,7 +107,7 @@ return (new TreeBuilder('my_package'))->getRootNode();
                 ->end()
             ->end()
         ->end()
-        ->arrayNode('dict_of_list_key')
+        ->arrayNode('struct_of_list_key')
             ->children()
                 ->arrayNode('a')
                     ->scalarPrototype()->end()
@@ -124,19 +124,19 @@ return (new TreeBuilder('my_package'))->getRootNode();
 Here is the declarative syntax for the same definition:
 
 ```php
-return configTree('my_package', dict([
+return configTree('my_package', struct([
     'string_key' => string(),
     'int_key' => int(),
-    'dict_key' => dict([
+    'struct_key' => struct([
         'a' => int(),
         'b' => int(),
     ]),
     'list_key' => listOf(int()),
-    'list_of_dict_key' => listOf(dict([
+    'list_of_struct_key' => listOf(struct([
         'a' => int(),
         'b' => int(),
     ])),
-    'dict_of_list_key' => dict([
+    'struct_of_list_key' => struct([
         'a' => listOf(string()),
         'b' => listOf(int()),
     ])

@@ -5,7 +5,6 @@ namespace Krak\Schema;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\Dumper\YamlReferenceDumper;
-use Symfony\Component\Config\Definition\NodeInterface;
 use function Krak\Schema\ProcessSchema\SymfonyConfig\configTree;
 
 final class SymfonyConfigTest extends \PHPUnit\Framework\TestCase
@@ -22,7 +21,7 @@ final class SymfonyConfigTest extends \PHPUnit\Framework\TestCase
     public function provide_config_trees() {
         yield 'empty tree' => [
             (new TreeBuilder('root')),
-            configTree('root', dict([])),
+            configTree('root', struct([])),
         ];
 
         yield 'tree with atomic values' => [
@@ -35,7 +34,7 @@ final class SymfonyConfigTest extends \PHPUnit\Framework\TestCase
                     ->scalarNode('mixed')->end()
                 ->end()
             ->end(),
-            configTree('root', dict([
+            configTree('root', struct([
                 'string' => string(),
                 'int' => int(),
                 'bool' => bool(),
@@ -44,10 +43,10 @@ final class SymfonyConfigTest extends \PHPUnit\Framework\TestCase
             ])),
         ];
 
-        yield 'tree with nested dicts' => [
+        yield 'tree with nested structs' => [
             (new TreeBuilder('root'))->getRootNode()
                 ->children()
-                    ->arrayNode('dict')
+                    ->arrayNode('struct')
                         ->children()
                             ->arrayNode('nested')
                                 ->children()
@@ -58,9 +57,9 @@ final class SymfonyConfigTest extends \PHPUnit\Framework\TestCase
                     ->end()
                 ->end()
             ->end(),
-            configTree('root', dict([
-                'dict' => dict([
-                    'nested' => dict([
+            configTree('root', struct([
+                'struct' => struct([
+                    'nested' => struct([
                         'int' => int(),
                     ])
                 ])
@@ -70,7 +69,7 @@ final class SymfonyConfigTest extends \PHPUnit\Framework\TestCase
         yield 'tree with lists' => [
             (new TreeBuilder('root'))->getRootNode()
                 ->children()
-                    ->arrayNode('dict_of_list')
+                    ->arrayNode('struct_of_list')
                         ->children()
                             ->arrayNode('strings')
                                 ->scalarPrototype()->end()
@@ -80,7 +79,7 @@ final class SymfonyConfigTest extends \PHPUnit\Framework\TestCase
                             ->end()
                         ->end()
                     ->end()
-                    ->arrayNode('list_of_dict')
+                    ->arrayNode('list_of_struct')
                         ->arrayPrototype()
                             ->children()
                                 ->scalarNode('string')->end()
@@ -90,12 +89,12 @@ final class SymfonyConfigTest extends \PHPUnit\Framework\TestCase
                     ->end()
                 ->end()
             ->end(),
-            configTree('root', dict([
-                'dict_of_list' => dict([
+            configTree('root', struct([
+                'struct_of_list' => struct([
                     'strings' => listOf(string()),
                     'ints' => listOf(int()),
                 ]),
-                'list_of_dict' => listOf(dict([
+                'list_of_struct' => listOf(struct([
                     'string' => string(),
                     'int' => int(),
                 ])),
@@ -109,7 +108,7 @@ final class SymfonyConfigTest extends \PHPUnit\Framework\TestCase
                     ->integerNode('int')->end()
                 ->end()
             ->end(),
-            configTree('root', dict([
+            configTree('root', struct([
                 'int' => int(),
             ], [ 'configure' => function($def) {  $def->ignoreExtraKeys(); } ]))
         ];
@@ -121,7 +120,7 @@ final class SymfonyConfigTest extends \PHPUnit\Framework\TestCase
                     ->integerNode('int')->end()
                 ->end()
             ->end(),
-            configTree('root', dict([
+            configTree('root', struct([
                 'string' => string(),
             ], [
                 'configure' => function(ArrayNodeDefinition $def) {
