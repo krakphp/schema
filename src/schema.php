@@ -22,15 +22,21 @@ function bool(array $attributes = []): Node {
     return (new Node('bool'))->withAddedAttributes($attributes);
 }
 
-function listOf(Node $node): Node { return new Node('list', ['node' => $node]); }
+function listOf(Node $node, array $attributes = []): Node {
+    return (new Node('list', ['node' => $node]))->withAddedAttributes($attributes);
+}
+
+function enum(array $values, array $attributes = []) {
+    return (new Node('enum', ['values' => $values]))->withAddedAttributes($attributes);
+}
 
 /**
  * Represents an unbound homgoneous key/value pair collection
  * e.g. $usersByName = ['bob' => new User(), 'mary' => new User()]; // array<string, User>
- * @param Node[] $nodes
+ * Similar to a list but without indexed keys
  */
-function dict(array $nodes, array $attributes = []): Node {
-    return (new Node('dict', ['nodesByName' => $nodes]))->withAddedAttributes($attributes);
+function dict(Node $node, array $attributes = []): Node {
+    return (new Node('dict', ['node' => $node]))->withAddedAttributes($attributes);
 }
 
 /**

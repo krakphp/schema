@@ -31,8 +31,14 @@ final class SchemasTest extends \PHPUnit\Framework\TestCase
     }
 
     public function test_dict() {
-        $node = dict(['a' => string(), 'b' => int()]);
+        $node = dict(string());
         $this->assertEquals('dict', $node->type());
+        $this->assertEquals('string', $node->attribute('node')->type());
+    }
+
+    public function test_struct() {
+        $node = struct(['a' => string(), 'b' => int()]);
+        $this->assertEquals('struct', $node->type());
         $this->assertEquals('string', $node->attribute('nodesByName')['a']->type());
         $this->assertEquals('int', $node->attribute('nodesByName')['b']->type());
     }

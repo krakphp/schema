@@ -130,5 +130,39 @@ final class SymfonyConfigTest extends \PHPUnit\Framework\TestCase
                 }
             ])),
         ];
+
+        yield 'tree with dict of string -> int' => [
+            (new TreeBuilder('root'))->getRootNode()
+                ->children()
+                    ->arrayNode('dict')
+                        ->ignoreExtraKeys()
+                        ->useAttributeAsKey('key')
+                        ->scalarPrototype()->end()
+                    ->end()
+                ->end()
+            ->end(),
+            configTree('root', struct([
+                'dict' => dict(string()),
+            ]))
+        ];
+
+        yield 'tree with enums' => [
+            (new TreeBuilder('root'))->getRootNode()
+                ->children()
+                    ->enumNode('direction')
+                        ->values(['north', 'south', 'east', 'west'])
+                    ->end()
+                    ->arrayNode('positions')
+                        ->enumPrototype()
+                            ->values(['up', 'down', 'left', 'right'])
+                        ->end()
+                    ->end()
+                ->end()
+            ->end(),
+            configTree('root', struct([
+                'direction' => enum(['north', 'south', 'east', 'west']),
+                'positions' => listOf(enum(['up', 'down', 'left', 'right']))
+            ])),
+        ];
     }
 }

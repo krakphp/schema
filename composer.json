@@ -23,6 +23,9 @@
         },
         "files": ["src/schema.php", "src/ProcessSchema/SymfonyConfig/process-schema.php"]
     },
+    "require": {
+        "php": "^7.1"
+    },
     "require-dev": {
         "phpunit/phpunit": "^9.0",
         "symfony/config": "^5.0",

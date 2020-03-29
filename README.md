@@ -14,19 +14,39 @@ Install with composer at `krak/schema`
 
 ```php
 <?php
-use function Krak\Schema\{struct, listOf, string, bool, int};
+use function Krak\Schema\{struct, listOf, dict, string, bool, int};
 
 $schema = struct([
     'name' => string(),
     'isAdmin' => bool(),
     'age' => int(),
     'tags' => listOf(string()),
-    'photos' => listOf(struct([
+    'photos' => dict(struct([
         'url' => string(),
         'width' => int(),
         'height' => int(),
     ]))
 ]);
+/* would match a structure like: 
+{
+  "name": "Bob",
+  "isAdmin": true,
+  "age": 26,
+  "tags": ["tall", "dark", "handsome"],
+  "photos": {
+    "small": {
+      "url": "https://mydomain.com/images/bob/small",
+      "width": 100,
+      "height": 200
+    },
+    "large": {
+      "url": "https://mydomain.com/images/bob/large",
+      "width": 600,
+      "height": 1200
+    },
+  }
+}
+*/
 ```
 
 ### Validation (Coming Soon)

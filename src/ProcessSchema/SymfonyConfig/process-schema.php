@@ -8,20 +8,20 @@ use Symfony\Component\Config\Definition\Builder\NodeBuilder;
 use Symfony\Component\Config\Definition\Builder\NodeParentInterface;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 
-function configTree(string $rootName, Node $dictNode): TreeBuilder {
-    if (!$dictNode->is(['dict', 'struct'])) {
-        throw new \RuntimeException('configTree expects a collection node for configuration. Received ' . $dictNode->type());
+function configTree(string $rootName, Node $collectionNode): TreeBuilder {
+    if (!$collectionNode->is(['list', 'dict', 'struct'])) {
+        throw new \RuntimeException('configTree expects a collection node for configuration. Received ' . $collectionNode->type());
     }
     $treeBuilder = new TreeBuilder($rootName);
     // support symfony 4 and 5.
     $rootNode = method_exists($treeBuilder, 'root') ? $treeBuilder->root($rootName) : $treeBuilder->getRootNode();
-    configureNode($rootNode, $dictNode);
+    configureNode($rootNode, $collectionNode);
     return $treeBuilder;
 }
 
 /** @internal */
 function configureNode(NodeParentInterface $configNode, Node $node): void {
-    if ($node->is(['dict', 'struct'])) {
+    if ($node->is('struct')) {
         if ($configNode instanceof ArrayNodeDefinition) {
             $resNode = $configNode;
         } else if ($configNode instanceof NodeBuilder) {
@@ -30,29 +30,37 @@ function configureNode(NodeParentInterface $configNode, Node $node): void {
             throw new \RuntimeException('Unexpected dict node type.');
         }
 
-        /** @var ArrayNodeDefinition $configNode */
         foreach ($node->attribute('nodesByName') ?? [] as $name => $childConfigNode) {
             configureNode($resNode->children(), $childConfigNode->withAddedAttributes(['name' => $name]));
         }
-    } else if ($node->type() === "string" || $node->type() === "mixed") {
+    } else if ($node->is(['string', 'mixed'])) {
         /** @var NodeBuilder $configNode */
         $resNode = $configNode->scalarNode($node->attribute('name'));
-    } else if ($node->type() === "int") {
+    } else if ($node->is("int")) {
         /** @var NodeBuilder $configNode */
         $resNode = $configNode->integerNode($node->attribute('name'));
-    } else if ($node->type() === "float") {
+    } else if ($node->is("float")) {
         /** @var NodeBuilder $configNode */
         $resNode = $configNode->floatNode($node->attribute('name'));
-    } else if ($node->type() === "bool") {
+    } else if ($node->is("bool")) {
         /** @var NodeBuilder $configNode */
         $resNode = $configNode->booleanNode($node->attribute('name'));
-    } else if ($node->type() === "list") {
+    } else if ($node->is('enum')) {
+        /** @var NodeBuilder $configNode */
+        $resNode = $configNode->enumNode($node->attribute('name'));
+        $resNode->values($node->attribute('values'));
+    } else if ($node->is(['list', 'dict'])) {
         if ($configNode instanceof ArrayNodeDefinition) {
             $resNode = $configNode;
         } else if ($configNode instanceof NodeBuilder) {
             $resNode = $configNode->arrayNode($node->attribute('name'));
         } else {
             throw new \RuntimeException('Unexpected dict node type.');
+        }
+        /** @var ArrayNodeDefinition $resNode */
+        if ($node->is('dict')) {
+            $resNode->ignoreExtraKeys();
+            $resNode->useAttributeAsKey($node->attribute('attribute_key') ?? 'key');
         }
         configureArrayNode($resNode, $node->attribute('node'));
     } else {
@@ -67,18 +75,18 @@ function configureNode(NodeParentInterface $configNode, Node $node): void {
 
 /** @internal */
 function configureArrayNode(ArrayNodeDefinition $arrayNode, Node $node): void {
-    if ($node->is(['dict', 'struct'])) {
+    if ($node->is(['dict', 'struct', 'list'])) {
         configureNode($arrayNode->arrayPrototype(), $node);
     } else if ($node->is(['string', 'mixed'])) {
         $arrayNode->scalarPrototype();
-    } else if ($node->type() === "int") {
+    } else if ($node->is("int")) {
         $arrayNode->integerPrototype();
-    } else if ($node->type() === "float") {
+    } else if ($node->is("float")) {
         $arrayNode->floatPrototype();
-    } else if ($node->type() === "bool") {
+    } else if ($node->is("bool")) {
         $arrayNode->booleanPrototype();
-    } else if ($node->type() === "list") {
-        configureNode($arrayNode->arrayPrototype(), $node);
+    } else if ($node->is('enum')) {
+        $arrayNode->enumPrototype()->values($node->attribute('values'));
     } else {
         throw new \RuntimeException('Unhandled node types.');
     }
