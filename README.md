@@ -171,6 +171,8 @@ Original RFC Pull Request to Symfony: https://github.com/symfony/symfony/issues/
 
 No formal API documentation is setup, but the src dir is under 200loc at this point. Also the tests directory gives a good overview of the various features as well.
 
+- [Symfony Config Feature Tests](./test/feature/SymfonyConfigTest.php)
+
 ## Testing
 
 Run `composer test` to run the test suite.

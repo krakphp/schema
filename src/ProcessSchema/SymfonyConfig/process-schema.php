@@ -30,6 +30,10 @@ function configureNode(NodeParentInterface $configNode, Node $node): void {
             throw new \RuntimeException('Unexpected dict node type.');
         }
 
+        if ($node->attribute('allowExtraKeys')) {
+            $resNode->ignoreExtraKeys(false);
+        }
+
         foreach ($node->attribute('nodesByName') ?? [] as $name => $childConfigNode) {
             configureNode($resNode->children(), $childConfigNode->withAddedAttributes(['name' => $name]));
         }
@@ -59,7 +63,6 @@ function configureNode(NodeParentInterface $configNode, Node $node): void {
         }
         /** @var ArrayNodeDefinition $resNode */
         if ($node->is('dict')) {
-            $resNode->ignoreExtraKeys();
             $resNode->useAttributeAsKey($node->attribute('attribute_key') ?? 'key');
         }
         configureArrayNode($resNode, $node->attribute('node'));

@@ -4,18 +4,13 @@ namespace Krak\Schema;
 
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
-use Symfony\Component\Config\Definition\Dumper\YamlReferenceDumper;
 use function Krak\Schema\ProcessSchema\SymfonyConfig\configTree;
 
 final class SymfonyConfigTest extends \PHPUnit\Framework\TestCase
 {
     /** @dataProvider provide_config_trees */
     public function test_processing_of_schema_to_config_tree(TreeBuilder $expected, TreeBuilder $actual) {
-        $dumper = new YamlReferenceDumper();
-        $this->assertEquals(
-            $dumper->dumpNode($expected->buildTree()),
-            $dumper->dumpNode($actual->buildTree())
-        );
+        $this->assertEquals($expected->buildTree(), $actual->buildTree());
     }
 
     public function provide_config_trees() {
@@ -101,7 +96,7 @@ final class SymfonyConfigTest extends \PHPUnit\Framework\TestCase
             ])),
         ];
 
-        yield 'tree with ignoreExtraKeys' => [
+        yield 'tree with custom configuration' => [
             (new TreeBuilder('root'))->getRootNode()
                 ->ignoreExtraKeys()
                 ->children()
@@ -111,6 +106,18 @@ final class SymfonyConfigTest extends \PHPUnit\Framework\TestCase
             configTree('root', struct([
                 'int' => int(),
             ], [ 'configure' => function($def) {  $def->ignoreExtraKeys(); } ]))
+        ];
+
+        yield 'tree with allowExtraKeys' => [
+            (new TreeBuilder('root'))->getRootNode()
+                ->ignoreExtraKeys(false)
+                ->children()
+                    ->integerNode('int')->end()
+                ->end()
+            ->end(),
+            configTree('root', struct([
+                'int' => int(),
+            ], ['allowExtraKeys' => true]))
         ];
 
         yield 'tree with configured array nodes' => [
@@ -135,7 +142,6 @@ final class SymfonyConfigTest extends \PHPUnit\Framework\TestCase
             (new TreeBuilder('root'))->getRootNode()
                 ->children()
                     ->arrayNode('dict')
-                        ->ignoreExtraKeys()
                         ->useAttributeAsKey('key')
                         ->scalarPrototype()->end()
                     ->end()
