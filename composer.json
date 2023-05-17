@@ -24,7 +24,7 @@
         "files": ["src/schema.php", "src/ProcessSchema/SymfonyConfig/process-schema.php"]
     },
     "require": {
-        "php": "^7.1"
+        "php": "^7.1 | ^8.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^9.0",
@@ -37,5 +37,10 @@
         "test-unit": "phpunit --testdox --colors=always test/unit",
         "test-feature": "phpunit --testdox --colors=always test/feature",
         "test": "phpunit --testdox --colors=always test/"
+    },
+    "config": {
+        "allow-plugins": {
+            "composer/package-versions-deprecated": true
+        }
     }
 }
